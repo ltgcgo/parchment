@@ -1,5 +1,5 @@
 #!/bin/bash
-#cd test
+cd deploy
 case "$1" in
 	"deno")
 		denoServe -p 8010

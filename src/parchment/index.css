@@ -1,0 +1,11 @@
+:root {
+	--primary: #039be5;
+}
+
+/* Making blockquotes at least somewhat presentable */
+blockquote > p {
+	margin-bottom: 0;
+}
+blockquote > blockquote {
+	margin-top: 0;
+}
