@@ -1,2 +1,1 @@
-:root{--primary: #039be5}blockquote>p{margin-bottom:0}blockquote>blockquote{margin-top:0}
-/*# sourceMappingURL=parchment.css.map */
+:root{--primary: #039be5}blockquote>p{margin-bottom:0}blockquote>blockquote{margin:calc(var(--typography-spacing-vertical) / 2) 0}th{font-weight:700}

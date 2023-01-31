@@ -2,7 +2,20 @@
 
 import showdown from "../../libs/showdown@showdownjs/showdown.min.js";
 
-let converter = new showdown.Converter();
+let converter = new showdown.Converter({
+	omitExtraWLInCodeBlocks: true,
+	ghCompatibleHeaderId: true,
+	parseImgDimensions: true,
+	simplifiedAutoLink: true,
+	excludeTrailingPunctuationFromURLs: true,
+	strikethrough: true,
+	tables: true,
+	tablesHeaderId: true,
+	tasklists: true,
+	disableForced4SpacesIndentedSublists: true,
+	simpleLineBreaks: true,
+	requireSpaceBeforeHeadingText: true
+});
 
 // Offloading MarkDown parsing to the Worker
 addEventListener("message", async function (ev) {

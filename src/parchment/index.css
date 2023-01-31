@@ -7,5 +7,10 @@ blockquote > p {
 	margin-bottom: 0;
 }
 blockquote > blockquote {
-	margin-top: 0;
+	margin: calc(var(--typography-spacing-vertical) / 2) 0;
+}
+
+/* Table heads should be in bold */
+th {
+	font-weight: bold;
 }
