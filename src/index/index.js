@@ -9,6 +9,9 @@ let siteConf;
 // Start MarkDown worker
 let mdParser = new Worker("./worker.js");
 
+// Store history state
+let visitStack = [];
+
 // Store search state
 let searchState = searchToObj(location.search);
 
@@ -16,15 +19,34 @@ let searchState = searchToObj(location.search);
 let renderer;
 let rendered = false;
 
+// Store DOM overlay targets
+let tabOverlay, overlayItem;
+let switchOverlay = function (target) {
+	for (let key in overlayItem) {
+		if (key == target) {
+			overlayItem[key].removeAttribute("hidden-slowly");
+		} else {
+			overlayItem[key].setAttribute("hidden-slowly", "true");
+		};
+	};
+	if (overlayItem[target]) {
+		tabOverlay.removeAttribute("hidden-slowly");
+	} else {
+		tabOverlay.setAttribute("hidden-slowly", "true");
+	};
+};
+
 // Achieving better minification
 const tabDoc = document,
 tabRoot = tabDoc.children[0];
 
 // Global link override
-let linkCapturer = function (ev) {
+let linkCapturer = async function (ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
-	console.debug(this.getAttribute("parchment"));
+	let newPath = this.getAttribute("parchment");
+	await showDom(newPath);
+	visitStack.push(newPath);
 };
 
 // Custom header actions
@@ -74,6 +96,7 @@ let domPreprocess = function (doc) {
 		idxSlash = href.indexOf("/");
 		if (idxColon > -1 && idxColon < 6 && idxSlash < 8) {
 			e.setAttribute("target", "_blank");
+			e.setAttribute("data-tooltip", "This link will be opened in a new tab.");
 		} else if (href[0] == "#") {} else {
 			e.setAttribute("parchment", href);
 			e.href = `?p=${href}`;
@@ -96,15 +119,18 @@ let hasDom = function (path) {
 	};
 };
 let finishDom = function (dom) {};
-let renderDom = async function () {
+let renderDom = async function (dom) {
 	while (renderer.children.length > 0) {
 		if (currentDom) {
 			currentDom.body.appendChild(renderer.children[0]);
+			console.debug("Moving the current render result...");
 		} else {
 			renderer.removeChild(renderer.children[0]);
+			console.debug("Removing the current render result...");
 		};
 	};
 	updateTitle();
+	currentDom = dom;
 	let length = currentDom.body.children.length,
 	offset = 0;
 	for (let i = 0; i < length; i ++) {
@@ -123,13 +149,14 @@ let renderDom = async function () {
 		tabRoot.scrollTop = history.state[getPath()].sY || 0;
 		tabRoot.scrollLeft = history.state[getPath()].sX || 0;
 	};
+	switchOverlay("");
 };
 let showDom = async function (path) {
 	rendered = false;
 	path = getPath(path);
+	switchOverlay("loading");
 	if (hasDom(path)) {
-		currentDom = parsedDoms.get(path);
-		renderDom();
+		renderDom(parsedDoms.get(path));
 	} else {
 		waitDom = path;
 	};
@@ -141,22 +168,22 @@ mdParser.addEventListener("message", (ev) => {
 		domPreprocess(dom);
 		parsedDoms.set(msg.id, dom);
 		if (waitDom == msg.id) {
-			currentDom = dom;
-			renderDom();
+			renderDom(dom);
 		};
 	} else if (waitDom == msg.id) {
 		// Show error page
+
 	};
 });
 self.parsedDoms = parsedDoms;
 
 // State reassurance
-let updateTitle = async function () {
+let updateTitle = async function (customTitle) {
 	if (currentDom) {
 		self.currentDom = currentDom;
 		tabDoc.title = `${$e("h1", currentDom)?.innerText || "Untitled"} - ${siteConf?.site?.name || "Parchment"}`;
 	} else {
-		tabDoc.title = `Loading - ${siteConf?.site?.name || "Parchment"}`;
+		tabDoc.title = `${customTitle || "Loading"} - ${siteConf?.site?.name || "Parchment"}`;
 	};
 };
 
@@ -165,8 +192,13 @@ tabDoc.addEventListener("readystatechange", function () {
 	switch (this.readyState) {
 		case "interactive": {
 			renderer = $e("main.container");
+			tabOverlay = $e(".overlay");
+			overlayItem = {
+				loading: $e("#loading-overlay")
+			};
 			updateTitle();
-			showDom(searchState.get("path") || "");
+			showDom(getPath());
+			visitStack.push(getPath());
 			break;
 		};
 		case "loaded": {

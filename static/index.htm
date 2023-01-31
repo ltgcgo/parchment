@@ -9,9 +9,19 @@
 </head>
 <body>
 	<!--Menu-->
+	<nav class="container">
+		<ul>
+			<li><a role="button" class="outline secondary">Back</a></li>
+		</ul>
+		<ul>
+			<li><a>Title</a></li>
+		</ul>
+	</nav>
 	<!--Viewport-->
 	<main class="container"></main>
 	<!--Footer-->
 	<!--Overlay-->
-	<div class="overlay" id="loading-overlay"></div>
+	<div class="overlay container-fluid">
+		<article aria-busy="true" class="overlay-item" id="loading-overlay">Loading...</article>
+	</div>
 </body>

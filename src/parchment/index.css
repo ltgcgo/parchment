@@ -2,6 +2,11 @@
 	--primary: #039be5;
 }
 
+[hidden-slowly] {
+	opacity: 0 !important;
+	pointer-events: none;
+}
+
 /* Making blockquotes at least somewhat presentable */
 blockquote > p {
 	margin-bottom: 0;
@@ -9,8 +14,32 @@ blockquote > p {
 blockquote > blockquote {
 	margin: calc(var(--typography-spacing-vertical) / 2) 0;
 }
-
 /* Table heads should be in bold */
 th {
 	font-weight: bold;
+}
+/* Shorten the padding of the main renderer */
+main {
+	padding: calc(var(--spacing) * 2) 0;
+}
+
+.overlay {
+	background-color: var(--background-color);
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+}
+.overlay-item {
+	position: absolute;
+	top: 0;
+}
+.overlay, .overlay-item {
+	opacity: 1;
+	transition: 0.5s opacity;
+}
+#loading-overlay {
+	max-width: max-content;
 }
