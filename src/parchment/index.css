@@ -19,8 +19,11 @@ th {
 	font-weight: bold;
 }
 /* Shorten the padding of the main renderer */
-main {
-	padding: calc(var(--spacing) * 2) 0;
+main, footer {
+	padding: calc(var(--spacing) * 2) 0 !important;
+}
+footer {
+	opacity: 0.5;
 }
 
 .overlay {

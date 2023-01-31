@@ -45,6 +45,7 @@ let linkCapturer = async function (ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	let newPath = this.getAttribute("parchment");
+	storeScroll();
 	await showDom(newPath);
 	visitStack.push(newPath);
 };
@@ -129,8 +130,8 @@ let renderDom = async function (dom) {
 			console.debug("Removing the current render result...");
 		};
 	};
-	updateTitle();
 	currentDom = dom;
+	updateTitle();
 	let length = currentDom.body.children.length,
 	offset = 0;
 	for (let i = 0; i < length; i ++) {
